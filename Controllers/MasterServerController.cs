@@ -18,7 +18,7 @@ namespace SanAndreasUnityMasterServer.Controllers
         [HttpPost("/register")]
         public IActionResult RegisterServer([FromBody] ServerListing serverListing)
         {
-            if (string.IsNullOrEmpty(serverListing.Name) || string.IsNullOrEmpty(serverListing.IP))
+            if (string.IsNullOrEmpty(serverListing.Name))
             {
                 return BadRequest("Invaild server details");
             }
