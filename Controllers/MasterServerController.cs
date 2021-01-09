@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SanAndreasUnityMasterServer.Models;
 using SanAndreasUnityMasterServer.Services;
-using System;
 
 namespace SanAndreasUnityMasterServer.Controllers
 {
@@ -26,19 +25,13 @@ namespace SanAndreasUnityMasterServer.Controllers
 
             _masterServerListService.AddServer(serverListing);
 
-            return Ok(serverListing.Id);
-        }
-
-        [HttpPost("/update")]
-        public IActionResult UpdateServer([FromBody] ServerListing serverListing)
-        {
-            return _masterServerListService.UpdateServer(serverListing) ? Ok("Updated server.") : BadRequest("Failed to update server");
+            return Ok();
         }
 
         [HttpPost("/unregister")]
-        public IActionResult UnregisterServer([FromBody] Guid id)
+        public IActionResult UnregisterServer([FromBody] ServerListing serverListing)
         {
-            return _masterServerListService.RemoveServer(id) ? Ok("Removed the server.") : BadRequest("Failed to remove the server");
+            return _masterServerListService.RemoveServer(serverListing) ? Ok("Removed the server.") : BadRequest("Failed to remove the server");
         }
 
         [HttpGet]

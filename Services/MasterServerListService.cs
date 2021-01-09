@@ -4,8 +4,6 @@ using SanAndreasUnityMasterServer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Timers;
 
 namespace SanAndreasUnityMasterServer.Services
@@ -26,51 +24,37 @@ namespace SanAndreasUnityMasterServer.Services
             {
                 AutoReset = true
             };
-            timer.Elapsed += (_, _) =>
-            {
-                for (int i = 0; i < _servers.Count; i++)
-                {
-                    ServerListing server = _servers[i];
-                    if ((DateTime.Now - server.LastUpdate) >= TimeSpan.FromSeconds(_config.GetValue<double>("MaxLastUpdateTime")))
-                    {
-                        RemoveServer(server.Id);
-                    }
-                }
-            };
+            timer.Elapsed += (_, _) => _servers.RemoveAll(x => (DateTime.Now - x.LastUpdate) >= TimeSpan.FromSeconds(_config.GetValue<double>("MaxLastUpdateTime")));
+
             timer.Start();
         }
 
         public void AddServer(ServerListing serverListing)
         {
-            serverListing.Id = Guid.NewGuid();
             serverListing.LastUpdate = DateTime.Now;
 
-            _servers.Add(serverListing);
-            _logger.LogInformation($"New server registered {serverListing.Name} {serverListing.IP}:{serverListing.Port}");
-        }
+            int existingListingIndex = _servers.FindIndex(x => x.IP == serverListing.IP && x.Port == serverListing.Port);
 
-        public bool UpdateServer(ServerListing serverListing)
-        {
-            int serverIndex = _servers.FindIndex(x => x.Id == serverListing.Id);
-            if (serverIndex != -1)
+            if (existingListingIndex == -1)
             {
-
-                _servers[serverIndex] = serverListing;
-                _servers[serverIndex].LastUpdate = DateTime.Now;
-                return true;
-
+                _servers.Add(serverListing);
+                _logger.LogInformation($"New server registered {serverListing.Name} {serverListing.IP}:{serverListing.Port}");
             }
-            return false;
+            else
+            {
+                _servers[existingListingIndex] = serverListing;
+                _logger.LogInformation($"Server updated {serverListing.Name} {serverListing.IP}:{serverListing.Port}");
+            }
         }
 
-        public bool RemoveServer(Guid id)
+        public bool RemoveServer(ServerListing serverListing)
         {
-            int serverIndex = _servers.FindIndex(x => x.Id == id);
+            int serverIndex = _servers.FindIndex(x => x.IP == serverListing.IP && x.Port == serverListing.Port);
 
             if (serverIndex != -1)
             {
-                _servers.RemoveAt(_servers.FindIndex(x => x.Id == id));
-                _logger.LogInformation($"Server {id} removed");
+                _servers.RemoveAt(serverIndex);
+                _logger.LogInformation($"Server {serverListing.Name} {serverListing.IP}:{serverListing.Port} removed");
                 return true;
             }
             return false;
