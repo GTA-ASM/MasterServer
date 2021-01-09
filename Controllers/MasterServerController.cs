@@ -22,6 +22,8 @@ namespace SanAndreasUnityMasterServer.Controllers
             {
                 return BadRequest("Invaild server details");
             }
+            
+            serverListing.IP = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
             _masterServerListService.AddServer(serverListing);
 
@@ -31,6 +33,7 @@ namespace SanAndreasUnityMasterServer.Controllers
         [HttpPost("/unregister")]
         public IActionResult UnregisterServer([FromBody] ServerListing serverListing)
         {
+            serverListing.IP = Request.HttpContext.Connection.RemoteIpAddress.ToString();
             return _masterServerListService.RemoveServer(serverListing) ? Ok("Removed the server.") : BadRequest("Failed to remove the server");
         }
 
