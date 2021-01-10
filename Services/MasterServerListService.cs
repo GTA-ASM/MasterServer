@@ -24,7 +24,7 @@ namespace SanAndreasUnityMasterServer.Services
             {
                 AutoReset = true
             };
-            timer.Elapsed += (_, _) => _servers.RemoveAll(x => (DateTime.Now - x.LastUpdate) >= TimeSpan.FromSeconds(_config.GetValue<double>("MaxLastUpdateTime")));
+            timer.Elapsed += (obj, args) => _servers.RemoveAll(x => (DateTime.Now - x.LastUpdate) >= TimeSpan.FromSeconds(_config.GetValue<double>("MaxLastUpdateTime")));
 
             timer.Start();
         }

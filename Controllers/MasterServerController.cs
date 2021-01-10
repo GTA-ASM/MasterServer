@@ -34,7 +34,7 @@ namespace SanAndreasUnityMasterServer.Controllers
         public IActionResult UnregisterServer([FromBody] ServerListing serverListing)
         {
             serverListing.IP = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-            return _masterServerListService.RemoveServer(serverListing) ? Ok("Removed the server.") : BadRequest("Failed to remove the server");
+            return _masterServerListService.RemoveServer(serverListing) ? (IActionResult) Ok("Removed the server.") : BadRequest("Failed to remove the server");
         }
 
         [HttpGet]
